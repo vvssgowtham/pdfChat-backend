@@ -39,6 +39,8 @@ router.post(
         return res.status(409).json({
           message: "File already exists in database",
           isDuplicate: true,
+          documentId: existingChunk.documentId,
+          filename: fileName,
         });
       }
 
