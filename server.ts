@@ -5,12 +5,24 @@ import chat from "./routes/chat";
 
 const PORT = process.env.PORT || 8000;
 
-app.use("/", upload);
-app.use("/", chat);
+const startServer = async () => {
+  try {
+    // Connect to database BEFORE starting the server
+    await connectDB();
+    console.log("✅ Database connected successfully");
 
-const onServerStart = async () => {
-  await connectDB();
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+    // Register routes AFTER database connection
+    app.use("/", upload);
+    app.use("/", chat);
+
+    // Start listening only after DB is connected
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+    process.exit(1);
+  }
 };
 
-app.listen(PORT, onServerStart);
+startServer();
