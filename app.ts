@@ -8,7 +8,10 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: "https://pdf-chat-frontend-inky.vercel.app",
+    origin: [
+      "https://pdf-chat-frontend-inky.vercel.app",
+      "https://pdfchat.vvssgowtham.dev",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
