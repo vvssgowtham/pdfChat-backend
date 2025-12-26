@@ -12,7 +12,7 @@ export const parsePdf = async (
   buffer: Buffer
 ): Promise<PdfParseResponse> => {
   try {
-    // Convert Buffer -> Uint8Array -> Blob (fixes TS + runtime)
+        // Convert Buffer -> Uint8Array -> Blob (fixes TS + runtime)
     const blob = new Blob([new Uint8Array(buffer)], {
       type: "application/pdf",
     });
@@ -38,8 +38,17 @@ export const parsePdf = async (
       text,
       pages: pages.length,
     };
-  } catch (error: any) {
-    console.error("Mistral OCR error:", error?.response?.data || error);
-    throw new Error(error?.message || "OCR failed");
+  } catch (error: unknown) {
+    console.error(
+      "Mistral OCR error:",
+      typeof error === "object" && error !== null && "response" in error
+        ? (error as { response?: { data?: unknown } }).response?.data
+        : error
+    );
+
+    const message =
+      error instanceof Error ? error.message : "OCR failed";
+
+    throw new Error(message);
   }
 };
