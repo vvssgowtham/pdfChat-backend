@@ -8,11 +8,9 @@ interface PdfParseResponse {
   pages: number;
 }
 
-export const parsePdf = async (
-  buffer: Buffer
-): Promise<PdfParseResponse> => {
+export const parsePdf = async (buffer: Buffer): Promise<PdfParseResponse> => {
   try {
-        // Convert Buffer -> Uint8Array -> Blob (fixes TS + runtime)
+    // Convert Buffer -> Uint8Array -> Blob (fixes TS + runtime)
     const blob = new Blob([new Uint8Array(buffer)], {
       type: "application/pdf",
     });
@@ -32,7 +30,10 @@ export const parsePdf = async (
     });
 
     const pages = ocr.pages ?? [];
-    const text = pages.map(p => p.markdown ?? "").join("\n\n").trim();
+    const text = pages
+      .map((p) => p.markdown ?? "")
+      .join("\n\n")
+      .trim();
 
     return {
       text,
@@ -46,8 +47,7 @@ export const parsePdf = async (
         : error
     );
 
-    const message =
-      error instanceof Error ? error.message : "OCR failed";
+    const message = error instanceof Error ? error.message : "OCR failed";
 
     throw new Error(message);
   }
