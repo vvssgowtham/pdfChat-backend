@@ -20,3 +20,6 @@ benchmarks/graphs
 # https://git-scm.com/docs/gitignore
 
 .env
+
+# Build output
+dist/
