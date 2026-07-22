@@ -1,0 +1,48 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --tag
+      - us-central1-docker.pkg.dev/$PROJECT_ID/pdfchat/backend:$SHORT_SHA
+      - --tag
+      - us-central1-docker.pkg.dev/$PROJECT_ID/pdfchat/backend:latest
+      - .
+
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - us-central1-docker.pkg.dev/$PROJECT_ID/pdfchat/backend:$SHORT_SHA
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - pdfchat-backend
+      - --image
+      - us-central1-docker.pkg.dev/$PROJECT_ID/pdfchat/backend:$SHORT_SHA
+      - --region
+      - us-central1
+      - --platform
+      - managed
+      - --allow-unauthenticated
+      - --memory
+      - 1Gi
+      - --cpu
+      - "1"
+      - --timeout
+      - "300"
+      - --set-env-vars
+      - DB_URI=$_DB_URI
+      - --set-env-vars
+      - HF_API_KEY=$_HF_API_KEY
+      - --set-env-vars
+      - MISTRAL_API_KEY=$_MISTRAL_API_KEY
+
+substitutions:
+  _DB_URI: your-mongodb-atlas-uri
+  _HF_API_KEY: your-huggingface-key
+  _MISTRAL_API_KEY: your-mistral-key
+
+images:
+  - us-central1-docker.pkg.dev/$PROJECT_ID/pdfchat/backend
