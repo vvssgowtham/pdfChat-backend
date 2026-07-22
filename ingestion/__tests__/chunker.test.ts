@@ -19,6 +19,7 @@ describe("chunker", () => {
     const mockMetadata: ChunkInputMetadata = {
       documentId: "doc123",
       filename: "test.pdf",
+      pdfHash: "abc123",
       totalPages: 10,
     };
 

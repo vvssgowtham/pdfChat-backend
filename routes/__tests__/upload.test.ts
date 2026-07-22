@@ -30,13 +30,14 @@ describe("POST /upload", () => {
     (ChunkModel.findOne as jest.Mock).mockReturnValue({
       limit: jest.fn().mockResolvedValue(null),
     });
+    (ChunkModel.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 0 });
     (parsePdf as jest.Mock).mockResolvedValue({ text: "pdf text", pages: 1 });
     (chunkText as jest.Mock).mockReturnValue([
       {
         content: "chunk1",
         documentId: "doc1",
         chunkIndex: 0,
-        metadata: {},
+        metadata: { pdfHash: "abc123" },
         checksum: "abc",
       },
     ]);

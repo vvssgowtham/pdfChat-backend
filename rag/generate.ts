@@ -3,6 +3,7 @@ import { Response } from "express";
 import { prompt as PROMPT_TEMPLATE } from "./prompt";
 
 const HF_API_KEY = process.env.HF_API_KEY;
+const MODEL = "meta-llama/Llama-3.1-8B-Instruct";
 const MODEL_URL = "https://router.huggingface.co/v1/chat/completions";
 
 export const chatCompletions = async (
@@ -33,7 +34,7 @@ export const chatCompletions = async (
     const response = await axios.post(
       MODEL_URL,
       {
-        model: "mistralai/Mistral-7B-Instruct-v0.3",
+        model: MODEL,
         messages: [
           {
             role: "system",

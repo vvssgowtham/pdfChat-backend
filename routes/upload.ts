@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import multer from "multer";
+import crypto from "crypto";
 import { parsePdf } from "../ingestion/pdfLoader";
 import { ChunkOutput, chunkText } from "../ingestion/chunker";
 import { generateEmbedding } from "../ingestion/embedder";
@@ -30,9 +31,10 @@ router.post(
       }
       const fileName = req.file.originalname;
       const pdfBuffer = req.file.buffer;
+      const pdfHash = crypto.createHash("sha256").update(pdfBuffer).digest("hex");
 
       const existingChunk = await ChunkModel.findOne({
-        "metadata.filename": fileName,
+        "metadata.pdfHash": pdfHash,
       }).limit(1);
 
       if (existingChunk) {
@@ -44,6 +46,8 @@ router.post(
         });
       }
 
+      await ChunkModel.deleteMany({ "metadata.filename": fileName });
+
       // 1. Parsing text from the PDF
       const response = await parsePdf(pdfBuffer);
 
@@ -51,6 +55,7 @@ router.post(
       const inputMetadata = {
         documentId: `pdf_${Date.now()}`,
         filename: fileName,
+        pdfHash,
         totalPages: response.pages,
       };
 

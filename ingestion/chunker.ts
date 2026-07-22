@@ -3,6 +3,7 @@ import crypto from "crypto";
 export interface ChunkInputMetadata {
   documentId: string;
   filename: string;
+  pdfHash: string;
   totalPages: number;
 }
 
@@ -14,6 +15,7 @@ export interface ChunkOutput {
   metadata: {
     source: "pdf";
     filename: string;
+    pdfHash: string;
     totalPages: number;
   };
 }
@@ -60,6 +62,7 @@ export const chunkText = (
       metadata: {
         source: "pdf",
         filename: inputMetadata.filename,
+        pdfHash: inputMetadata.pdfHash,
         totalPages: inputMetadata.totalPages,
       },
     });

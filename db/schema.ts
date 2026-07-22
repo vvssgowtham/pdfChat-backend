@@ -36,6 +36,11 @@ const ChunkSchema = new Schema(
         required: true,
       },
 
+      pdfHash: {
+        type: String,
+        required: true,
+      },
+
       totalPages: {
         type: Number,
         required: true,
