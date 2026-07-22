@@ -33,7 +33,7 @@ export const chatCompletions = async (
     const response = await axios.post(
       MODEL_URL,
       {
-        model: "meta-llama/Llama-3.2-3B-Instruct",
+        model: "mistralai/Mistral-7B-Instruct-v0.3",
         messages: [
           {
             role: "system",
