@@ -62,10 +62,12 @@ export const chatCompletions = async (
 
     // Handle stream termination
     response.data.on("end", () => res.end());
-  } catch (error: any) {
-    console.error("LLM Generation Error:", error.message);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("LLM Generation Error:", errorMessage);
 
-    if (error.response && error.response.data) {
+    if (axios.isAxiosError(error) && error.response?.data) {
       error.response.data.on("data", (chunk: Buffer) => {
         console.error("HF API Error Detail:", chunk.toString());
       });

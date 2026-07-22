@@ -84,7 +84,7 @@ router.post(
         totalChunks: chunks.length,
         totalPages: response.pages,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error processing PDF:", error);
       return res.status(500).json({
         message: "Error processing PDF",
