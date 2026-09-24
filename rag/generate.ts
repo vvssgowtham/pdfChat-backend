@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Response } from "express";
 import { prompt as PROMPT_TEMPLATE } from "./prompt";
+import { withRetry } from "../lib/retry";
 
 const HF_API_KEY = process.env.HF_API_KEY;
 const MODEL = "meta-llama/Llama-3.1-8B-Instruct";
@@ -31,31 +32,33 @@ export const chatCompletions = async (
     - Do not repeat headers or instructions in your output.
     - Use clean Markdown formatting.`;
 
-    const response = await axios.post(
-      MODEL_URL,
-      {
-        model: MODEL,
-        messages: [
-          {
-            role: "system",
-            content: systemInstructions,
-          },
-          {
-            role: "user",
-            content: userContent,
-          },
-        ],
-        max_tokens: 1024,
-        temperature: 0.1, // Low temperature ensures factual, non-repetitive answers
-        stream: true,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${HF_API_KEY}`,
-          "Content-Type": "application/json",
+    const response = await withRetry(() =>
+      axios.post(
+        MODEL_URL,
+        {
+          model: MODEL,
+          messages: [
+            {
+              role: "system",
+              content: systemInstructions,
+            },
+            {
+              role: "user",
+              content: userContent,
+            },
+          ],
+          max_tokens: 1024,
+          temperature: 0.1, // Low temperature ensures factual, non-repetitive answers
+          stream: true,
         },
-        responseType: "stream",
-      }
+        {
+          headers: {
+            Authorization: `Bearer ${HF_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          responseType: "stream",
+        }
+      )
     );
 
     // Pipe the LLM stream directly to the Express response

@@ -46,8 +46,6 @@ router.post(
         });
       }
 
-      await ChunkModel.deleteMany({ "metadata.filename": fileName });
-
       // 1. Parsing text from the PDF
       const response = await parsePdf(pdfBuffer);
 
@@ -66,19 +64,29 @@ router.post(
         chunkOptions
       );
 
-      const chunksWithEmbeddings = await Promise.all(
-        chunks.map(async (chunk) => {
-          const embedding = await generateEmbedding(chunk.content);
-          return {
-            documentId: chunk.documentId,
-            content: chunk.content,
-            embedding: embedding,
-            chunkIndex: chunk.chunkIndex,
-            metadata: chunk.metadata,
-            checksum: chunk.checksum,
-          };
-        })
-      );
+      const chunksWithEmbeddings: (ChunkOutput & { embedding: number[] })[] =
+        [];
+
+      const CONCURRENCY = 3;
+      for (let i = 0; i < chunks.length; i += CONCURRENCY) {
+        const batch = chunks.slice(i, i + CONCURRENCY);
+        const embeddedBatch = await Promise.all(
+          batch.map(async (chunk) => {
+            const embedding = await generateEmbedding(chunk.content);
+            return {
+              documentId: chunk.documentId,
+              content: chunk.content,
+              embedding: embedding,
+              chunkIndex: chunk.chunkIndex,
+              metadata: chunk.metadata,
+              checksum: chunk.checksum,
+            };
+          })
+        );
+        chunksWithEmbeddings.push(...embeddedBatch);
+      }
+
+      await ChunkModel.deleteMany({ "metadata.filename": fileName });
 
       await ChunkModel.insertMany(chunksWithEmbeddings);
 

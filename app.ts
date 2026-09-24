@@ -11,6 +11,7 @@ app.use(
     origin: [
       "https://pdf-chat-frontend-inky.vercel.app",
       "https://pdfchat.vvssgowtham.dev",
+      "https://pdfchat.vvssgowtham.in",
       "http://localhost:5173",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],

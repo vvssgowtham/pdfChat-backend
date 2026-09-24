@@ -74,11 +74,12 @@ describe("chatCompletions", () => {
       isAxiosError: true,
       message: "Axios Error",
       response: {
+        status: 400,
         data: mockErrorData,
       },
     };
 
-    mockedAxios.isAxiosError.mockReturnValueOnce(true);
+    mockedAxios.isAxiosError.mockReturnValue(true);
     mockedAxios.post.mockRejectedValueOnce(axiosError);
 
     await chatCompletions(["chunk1"], "query", mockRes as Response);
